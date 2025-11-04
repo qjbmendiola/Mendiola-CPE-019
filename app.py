@@ -8,7 +8,7 @@ st.title("Villain Classifier 🔮")
 st.write("Upload an image to classify which villain it belongs to.")
 
 # Load model
-model = tf.keras.models.load_model('transfer_model.h5')
+model = tf.keras.models.load_model('transfer_model.h5', compile=False)
 st.success("✅ Model loaded successfully!")
 
 # Define classes (replace with your real ones)
