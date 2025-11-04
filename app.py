@@ -11,7 +11,7 @@ model = tf.keras.models.load_model('transfer_model.h5', compile=False)
 st.success("✅ Model loaded successfully!")
 
 # Define classes (replace with your real ones)
-class_names = ['Venom', 'Thanos', 'Green Goblin', 'Darth Vader', 'Joker']
+class_names = ['Venom', 'Darth Vader', 'Green Goblin', 'Thanos', 'Joker']
 
 uploaded_file = st.file_uploader("Upload an image...", type=["jpg", "jpeg", "png"])
 
