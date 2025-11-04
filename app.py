@@ -21,7 +21,7 @@ if uploaded_file is not None:
     st.image(img, caption="Uploaded Image", use_container_width=True)
     st.write("Classifying...")
 
-    img = img.resize((224, 224))
+    image = image.resize((128, 128))
     img_array = image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
     img_array = img_array / 255.0
