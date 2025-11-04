@@ -51,16 +51,25 @@ if uploaded_file is not None:
         st.metric(label="Predicted Class", value=predicted_class)
         st.metric(label="Confidence", value=f"{confidence:.2f}%")
         
-        # --- Display Top Predictions (Fixes the IndexError) ---
+# --- Display Top Predictions (Final Attempt to Fix IndexError) ---
         st.markdown("---")
         st.write("Top Predictions:")
         
-        # FIX: Safely determine the top indices by ensuring we don't exceed the list bounds (5 classes).
-        top_k = min(3, len(class_names))
-        top_indices = np.argsort(score)[::-1][:top_k]
+        # 1. Get the indices of the score array, ensuring we only slice up to the length of class_names
+        num_classes = len(class_names)
         
+        # Get all scores sorted descendingly, and only keep indices that are valid for class_names
+        # We use a filter to ensure the index 'i' is less than the number of classes (5)
+        all_sorted_indices = np.argsort(score)[::-1]
+        
+        # Filter the sorted indices to ensure they are within the bounds of class_names (0 to 4)
+        valid_sorted_indices = [i for i in all_sorted_indices if i < num_classes]
+        
+        # Take the top 3 (or fewer if there aren't 3 valid ones)
+        top_indices = valid_sorted_indices[:min(3, len(valid_sorted_indices))]
+        
+        # 2. Iterate and display
         for i in top_indices:
-            # This line now uses guaranteed valid index 'i', resolving the IndexError.
             st.write(f"- {class_names[i]}: {100 * score[i]:.2f}%")
 
 st.write("---")
