@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 
 st.title("Villain Character Classifier")
-st.write("Upload an image to classify which villain character to.")
+st.write("Upload an image to identify the villain character.")
 
 # Load model
 model = tf.keras.models.load_model('transfer_model.h5', compile=False)
