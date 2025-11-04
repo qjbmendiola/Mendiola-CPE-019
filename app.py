@@ -5,7 +5,6 @@ import numpy as np
 from PIL import Image
 
 st.title("Villain Character Classifier")
-# FINAL GRAMMAR: Clear and concise.
 st.write("Upload an image to identify the villain character.")
 
 # Load model
@@ -14,6 +13,7 @@ st.success("✅ Model loaded successfully!")
 
 # Define classes (5 classes total)
 class_names = ['Venom', 'Darth Vader', 'Green Goblin', 'Thanos', 'Joker']
+NUM_CLASSES = len(class_names) # 5
 
 uploaded_file = st.file_uploader("Upload an image...", type=["jpg", "jpeg", "png"])
 
@@ -21,7 +21,7 @@ if uploaded_file is not None:
     img = Image.open(uploaded_file)
     st.write("---") 
 
-    # GUI: Two columns for side-by-side layout
+    # GUI: Two columns for a side-by-side layout
     col1, col2 = st.columns([1, 1])
     
     with col1:
@@ -40,8 +40,14 @@ if uploaded_file is not None:
 
         # --- Model Prediction ---
         predictions = model.predict(img_array)
-        score = tf.nn.softmax(predictions[0]).numpy() # Convert score to a simple NumPy array
+        # Flatten the score array to ensure it's 1D, which handles model output inconsistencies
+        score = tf.nn.softmax(predictions[0]).numpy().flatten() 
         
+        # FINAL INDEX CHECK: Ensure the score array size matches the number of classes
+        if score.size != NUM_CLASSES:
+            st.error(f"Prediction Error: Model output size ({score.size}) does not match the defined class count ({NUM_CLASSES}).")
+            st.stop() # Stops the execution cleanly
+            
         # --- Display Main Results ---
         predicted_index = np.argmax(score)
         predicted_class = class_names[predicted_index]
@@ -50,7 +56,7 @@ if uploaded_file is not None:
         st.metric(label="Predicted Class", value=predicted_class)
         st.metric(label="Confidence", value=f"{confidence:.2f}%")
         
-        # --- Display Top Predictions (FINAL FIX FOR INDEX ERROR) ---
+        # --- Display Top Predictions (Robust Python Sorting Fix) ---
         st.markdown("---")
         st.write("Top Predictions:")
         
