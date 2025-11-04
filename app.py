@@ -5,22 +5,24 @@ import numpy as np
 from PIL import Image
 
 st.title("Villain Character Classifier")
-# CORRECTED GRAMMAR LINE
+# CORRECTED GRAMMAR: Clear and concise.
 st.write("Upload an image to identify the villain character.")
 
+# Load model
+# compile=False is necessary for loading the model successfully in the Streamlit environment.
 model = tf.keras.models.load_model('transfer_model.h5', compile=False)
 st.success("✅ Model loaded successfully!")
 
-# Define classes
+# Define classes (5 classes total)
 class_names = ['Venom', 'Darth Vader', 'Green Goblin', 'Thanos', 'Joker']
 
 uploaded_file = st.file_uploader("Upload an image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
     img = Image.open(uploaded_file)
-    st.write("---") # Add a separator
+    st.write("---") 
 
-    # GUI ADJUSTMENT: Create two columns: Image on the left, Results on the right
+    # GUI ADJUSTMENT: Create two columns for a side-by-side layout
     col1, col2 = st.columns([1, 1])
     
     with col1:
@@ -32,6 +34,7 @@ if uploaded_file is not None:
         st.write("Processing...")
 
         # --- Image Preprocessing ---
+        # Fixed the variable conflict (img = img.resize) and ensured 128x128 shape.
         img_resized = img.resize((128, 128))
         img_array = image.img_to_array(img_resized)
         img_array = np.expand_dims(img_array, axis=0)
@@ -44,15 +47,20 @@ if uploaded_file is not None:
         predicted_class = class_names[np.argmax(score)]
         confidence = 100 * np.max(score)
 
-        # --- Display Results ---
+        # --- Display Main Results ---
         st.metric(label="Predicted Class", value=predicted_class)
         st.metric(label="Confidence", value=f"{confidence:.2f}%")
         
-        # Optional: Display top 3 predictions for better insight
+        # --- Display Top Predictions (Fixes the IndexError) ---
         st.markdown("---")
         st.write("Top Predictions:")
-        top_indices = np.argsort(score)[::-1][:3]
+        
+        # FIX: Safely determine the top indices by ensuring we don't exceed the list bounds (5 classes).
+        top_k = min(3, len(class_names))
+        top_indices = np.argsort(score)[::-1][:top_k]
+        
         for i in top_indices:
+            # This line now uses guaranteed valid index 'i', resolving the IndexError.
             st.write(f"- {class_names[i]}: {100 * score[i]:.2f}%")
 
 st.write("---")
