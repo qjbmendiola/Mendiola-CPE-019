@@ -3,3 +3,8 @@ headless = true
 
 [compatibility]
 pythonVersion = 3.10
+[server]
+headless = true
+
+[compatibility]
+pythonVersion = 3.10
